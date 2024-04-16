@@ -1,4 +1,6 @@
-﻿namespace DeliveryApp.Core.Domain.SharedKernel;
+﻿using DeliveryApp.Core.Domain.SharedKernel;
+
+namespace DeliveryApp.Core.Domain.OrderAggregate;
 
 public sealed class OrderStatus : ValueObject
 {

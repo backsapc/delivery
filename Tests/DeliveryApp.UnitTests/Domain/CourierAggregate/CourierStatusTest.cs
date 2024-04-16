@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using DeliveryApp.Core.Domain.SharedKernel;
+using DeliveryApp.Core.Domain.CourierAggregate;
 using FluentAssertions;
 using JetBrains.Annotations;
 using Xunit;
 
-namespace DeliveryApp.UnitTests.Domain.SharedKernel;
+namespace DeliveryApp.UnitTests.Domain.CourierAggregate;
 
 [TestSubject(typeof(CourierStatus))]
 public class CourierStatusTest

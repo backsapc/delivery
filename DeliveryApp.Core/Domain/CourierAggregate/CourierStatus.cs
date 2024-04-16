@@ -1,4 +1,6 @@
-﻿namespace DeliveryApp.Core.Domain.SharedKernel;
+﻿using DeliveryApp.Core.Domain.SharedKernel;
+
+namespace DeliveryApp.Core.Domain.CourierAggregate;
 
 public sealed class CourierStatus : ValueObject
 {
