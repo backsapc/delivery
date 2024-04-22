@@ -7,3 +7,9 @@ public class OrderAssignedToCourier : IDomainEvent
     public Guid OrderId { get; set; }
     public Guid CourierId { get; set; }
 }
+
+public class OrderCompleted : IDomainEvent
+{
+    public Guid OrderId { get; set; }
+    public Guid CourierId { get; set; }
+}

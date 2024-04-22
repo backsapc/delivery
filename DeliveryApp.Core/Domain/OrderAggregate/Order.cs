@@ -40,4 +40,22 @@ public class Order : Aggregate<Guid>
             CourierId = courierId
         });
     }
+    
+    public void Complete(Guid courierId)
+    {
+        if (Status != OrderStatus.Assigned) 
+            throw Exceptions.CannotCompleteNotInProgressOrder(Id);
+
+        if (CourierId != courierId)
+            throw Exceptions.CannotCompleteOrderByWrongCourier(Id, courierId);
+        
+        CourierId = courierId;
+        Status = OrderStatus.Completed;
+        
+        RaiseDomainEvent(new OrderCompleted
+        {
+            OrderId = Id, 
+            CourierId = courierId
+        });
+    }
 }
