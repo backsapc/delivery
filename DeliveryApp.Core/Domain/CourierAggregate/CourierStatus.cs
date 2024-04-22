@@ -1,4 +1,4 @@
-﻿using DeliveryApp.Core.Domain.SharedKernel;
+﻿using CSharpFunctionalExtensions;
 
 namespace DeliveryApp.Core.Domain.CourierAggregate;
 
@@ -15,7 +15,7 @@ public sealed class CourierStatus : ValueObject
         _value = value;
     }
     
-    protected override IEnumerable<object> GetEqualityComponents()
+    protected override IEnumerable<IComparable> GetEqualityComponents()
     {
         yield return _value;
     }

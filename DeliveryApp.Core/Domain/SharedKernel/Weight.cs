@@ -1,4 +1,7 @@
-﻿namespace DeliveryApp.Core.Domain.SharedKernel;
+﻿using CSharpFunctionalExtensions;
+using DeliveryApp.Core.Domain.SharedKernel.Exceptions;
+
+namespace DeliveryApp.Core.Domain.SharedKernel;
 
 public sealed class Weight : ValueObject
 {
@@ -17,7 +20,7 @@ public sealed class Weight : ValueObject
         return new Weight(value);
     }
 
-    protected override IEnumerable<object> GetEqualityComponents()
+    protected override IEnumerable<IComparable> GetEqualityComponents()
     {
         yield return Value;
     }

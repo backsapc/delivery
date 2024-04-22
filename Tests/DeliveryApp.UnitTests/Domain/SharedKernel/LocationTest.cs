@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using DeliveryApp.Core.Domain.SharedKernel;
+using DeliveryApp.Core.Domain.SharedKernel.Exceptions;
 using FluentAssertions;
 using JetBrains.Annotations;
 using Xunit;
@@ -14,11 +15,11 @@ public class LocationTest
     [MemberData(nameof(CorrectLocations))]
     public void Location_ShouldBe_CreatedForCorrectData(int x, int y)
     {
-        Location value = Location.Of(x, y);
+        var value = Location.Of(x, y);
 
-        value.Should().NotBeNull();
-        value.PositionX.Should().Be(x);
-        value.PositionY.Should().Be(y);
+        value.IsSuccess.Should().BeTrue();
+        value.Value.PositionX.Should().Be(x);
+        value.Value.PositionY.Should().Be(y);
     }
 
     public static IEnumerable<object[]> CorrectLocations => new object[][]
