@@ -2,11 +2,11 @@
 
 namespace Primitives
 {
-    public abstract class Aggregate : Entity<Guid>, AggregateRoot
+    public abstract class Aggregate<TKey> : Entity<TKey>, AggregateRoot where TKey : IComparable<TKey>
     {
         private readonly List<IDomainEvent> _domainEvents = new();
 
-        protected Aggregate(Guid id) : base(id)
+        protected Aggregate(TKey id) : base(id)
         {
         }
 

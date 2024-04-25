@@ -1,4 +1,5 @@
 ﻿using DeliveryApp.Core.Domain.SharedKernel;
+using DeliveryApp.Core.Domain.SharedKernel.Exceptions;
 using FluentAssertions;
 using JetBrains.Annotations;
 using Xunit;

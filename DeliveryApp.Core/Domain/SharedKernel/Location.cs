@@ -1,4 +1,7 @@
-﻿namespace DeliveryApp.Core.Domain.SharedKernel;
+﻿using CSharpFunctionalExtensions;
+using DeliveryApp.Core.Domain.SharedKernel.Exceptions;
+
+namespace DeliveryApp.Core.Domain.SharedKernel;
 
 public sealed class Location : ValueObject
 {
@@ -11,35 +14,31 @@ public sealed class Location : ValueObject
         PositionY = y;  
     }
 
-    public static Location Of(int x, int y)
+    public static Result<Location, ValidationException> Of(int x, int y)
     {
-        EnsureLessOrEqualThan10(x);
-        EnsureGreaterOrEqualThan1(x);
-        EnsureLessOrEqualThan10(y);
-        EnsureGreaterOrEqualThan1(y);
+        if (x is not (>= 1 and <= 10)) return Exceptions.ShouldBeInRangeException(x, new Range(1, 10));
+        if (y is not (>= 1 and <= 10)) return Exceptions.ShouldBeInRangeException(y, new Range(1, 10));
 
         return new Location(x, y);
     }
 
-    static void EnsureLessOrEqualThan10(int value)
+    public long DistanceTo(Location other)
     {
-        if (value > 10)
-        {
-            throw new ValidationException(nameof(value), "Should be less or equal than 10");
-        }
+        return Math.Abs(PositionX - other.PositionX) + Math.Abs(PositionY - other.PositionY);
     }
 
-    static void EnsureGreaterOrEqualThan1(int value)
-    {
-        if (value < 1)
-        {
-            throw new ValidationException(nameof(value), "Should be greater or equal than 1");
-        }
-    }
-
-    protected override IEnumerable<object> GetEqualityComponents()
+    protected override IEnumerable<IComparable> GetEqualityComponents()
     {
         yield return PositionX;
         yield return PositionY;
+    }
+    
+    private static class Exceptions
+    {
+        public static ValidationException ShouldBeInRangeException(int value, Range range)
+        {
+            return new ValidationException(
+                nameof(value), $"Should be in range from {range.Start} to {range.End}");
+        }
     }
 }

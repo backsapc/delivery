@@ -9,7 +9,6 @@ namespace DeliveryApp.UnitTests.Domain.CourierAggregate;
 [TestSubject(typeof(CourierStatus))]
 public class CourierStatusTest
 {
-
     [Fact]
     public void Should_Create_CourierStatus_NotAvailable()
     {
