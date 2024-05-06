@@ -8,15 +8,15 @@ public sealed class CourierStatus : ValueObject
     public static CourierStatus Ready = new(2);
     public static CourierStatus Busy = new(3);
 
-    private readonly int _value;
+    public int Value { get; init; }
 
-    public CourierStatus(int value)
+    private CourierStatus(int value)
     {
-        _value = value;
+        Value = value;
     }
     
     protected override IEnumerable<IComparable> GetEqualityComponents()
     {
-        yield return _value;
+        yield return Value;
     }
 }

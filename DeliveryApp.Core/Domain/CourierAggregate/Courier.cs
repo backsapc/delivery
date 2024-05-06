@@ -4,12 +4,12 @@ using Primitives;
 
 namespace DeliveryApp.Core.Domain.CourierAggregate;
 
-public class Courier : Aggregate<Guid>
+public sealed class Courier : Aggregate<Guid>
 {
-    private string Name { get; set; }
-    private Transport Transport { get; set; }
-    private Location CourierLocation { get; set; }
-    private CourierStatus Status { get; set; }
+    public string Name { get; private set; }
+    public Transport Transport { get; private set; }
+    public Location CourierLocation { get; private set; }
+    public CourierStatus Status { get; private set; }
 
     private Guid? CurrentOrderId { get; set; }
 
@@ -134,6 +134,10 @@ public class Courier : Aggregate<Guid>
 
 public sealed class Transport : Entity<int>
 {
+    public static IReadOnlyCollection<Transport> List() => [
+        Pedestrian, Bicycle, Scooter, Car
+    ];
+    
     public static readonly Transport Pedestrian = Create(1, "pedestrian", 1, 1);
     public static readonly Transport Bicycle = Create(2, "bicycle", 4, 2);
     public static readonly Transport Scooter = Create(3, "scooter", 6, 3);
@@ -146,8 +150,8 @@ public sealed class Transport : Entity<int>
         Speed = speed;
     }
 
-    private string Name { get; }
-    private long Capacity { get; }
+    public string Name { get; }
+    public long Capacity { get; }
     public long Speed { get; }
 
     private static Transport Create(int id, string name, long capacity, long speed)
