@@ -10,6 +10,8 @@ public sealed class Order : Aggregate<Guid>
     public Weight Weight { get; private set; }
     public OrderStatus Status { get; private set; }
 
+    private Order() { }
+    
     private Order(Guid orderId, Location deliveryLocation, Weight weight, OrderStatus status) : base(orderId)
     {
         DeliveryLocation = deliveryLocation;

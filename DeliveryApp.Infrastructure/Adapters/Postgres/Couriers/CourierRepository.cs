@@ -17,7 +17,7 @@ public class CourierRepository(ApplicationDbContext dbContext) : ICourierReposit
         dbContext.Entry(courier).State = EntityState.Modified;
     }
 
-    public async Task<Courier?> GetAsync(Guid courierId)
+    public async Task<Courier?> Get(Guid courierId)
     {
         return await dbContext
                      .Couriers

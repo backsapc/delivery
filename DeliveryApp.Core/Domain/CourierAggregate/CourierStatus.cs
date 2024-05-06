@@ -10,6 +10,9 @@ public sealed class CourierStatus : ValueObject
 
     public int Value { get; init; }
 
+    private CourierStatus()
+    { }
+    
     private CourierStatus(int value)
     {
         Value = value;

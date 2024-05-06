@@ -7,6 +7,9 @@ public sealed class Weight : ValueObject
 {
     public decimal Value { get; }
     
+    private Weight()
+    { }
+    
     private Weight(decimal value)
     {
         Value = value;

@@ -17,7 +17,7 @@ public class OrderRepository(ApplicationDbContext dbContext) : IOrderRepository
         dbContext.Orders.Update(order);
     }
 
-    public async Task<Order?> GetAsync(Guid orderId)
+    public async Task<Order?> Get(Guid orderId)
     {
         return await dbContext.Orders.FirstOrDefaultAsync(x => x.Id == orderId);
     }

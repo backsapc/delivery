@@ -6,5 +6,5 @@ public interface ICourierRepository : IRepository<Courier>
 {
     Courier Add(Courier courier);            // Добавить курьера
     void Update(Courier courier);            // Обновить курьера
-    Task<Courier?> GetAsync(Guid courierId); //Получить курьера
+    Task<Courier?> Get(Guid courierId); //Получить курьера
 }

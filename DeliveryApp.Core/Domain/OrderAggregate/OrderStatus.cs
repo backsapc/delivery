@@ -10,6 +10,9 @@ public sealed class OrderStatus : ValueObject
 
     public int Value { get; init; }
 
+    private OrderStatus()
+    { }
+    
     private OrderStatus(int value)
     {
         Value = value;
