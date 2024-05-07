@@ -3,13 +3,15 @@ using Primitives;
 
 namespace DeliveryApp.Core.Domain.OrderAggregate;
 
-public class Order : Aggregate<Guid>
+public sealed class Order : Aggregate<Guid>
 {
-    private Guid? CourierId { get; set; }
-    private Location DeliveryLocation { get; set; }
-    private Weight Weight { get; set; }
-    private OrderStatus Status { get; set; }
+    public Guid? CourierId { get; private set; }
+    public Location DeliveryLocation { get; private set; }
+    public Weight Weight { get; private set; }
+    public OrderStatus Status { get; private set; }
 
+    private Order() { }
+    
     private Order(Guid orderId, Location deliveryLocation, Weight weight, OrderStatus status) : base(orderId)
     {
         DeliveryLocation = deliveryLocation;

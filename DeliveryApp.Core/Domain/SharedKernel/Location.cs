@@ -8,6 +8,9 @@ public sealed class Location : ValueObject
     public int PositionY { get; }
     public int PositionX { get; }
     
+    private Location()
+    { }
+    
     private Location(int x, int y)
     {
         PositionX = x;
