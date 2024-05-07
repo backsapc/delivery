@@ -130,6 +130,8 @@ public sealed class Courier : Aggregate<Guid>
         }
     }
 
+    public bool CanHandle(Weight weight) => Transport.CanHandle(weight);
+
     public Location CurrentLocation() => CourierLocation;
     public CourierStatus CurrentStatus() => Status;
 }
