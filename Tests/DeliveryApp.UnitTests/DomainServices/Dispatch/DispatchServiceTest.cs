@@ -3,7 +3,6 @@ using System.Linq;
 using DeliveryApp.Core.Domain.CourierAggregate;
 using DeliveryApp.Core.Domain.OrderAggregate;
 using DeliveryApp.Core.Domain.SharedKernel;
-using DeliveryApp.Core.Domain.SharedKernel.Exceptions;
 using DeliveryApp.Core.DomainServices.Dispatch;
 using FluentAssertions;
 using JetBrains.Annotations;
@@ -22,7 +21,7 @@ public class DispatchServiceTest
         var validCourier = Courier.Create(
             Guid.NewGuid(), Guid.NewGuid().ToString(), Transport.Car);
         validCourier.GetOnTheLine();
-        
+
         var invalidCourierWhichNotHandles = Courier.Create(
             Guid.NewGuid(), Guid.NewGuid().ToString(), Transport.Car);
         invalidCourierWhichNotHandles.GetOnTheLine();
@@ -33,31 +32,35 @@ public class DispatchServiceTest
 
         var couriers = new[]
         {
-            validCourier, 
-            invalidCourierWhichNotHandles, 
+            validCourier,
+            invalidCourierWhichNotHandles,
             invalidCourierWhichCanHandle
         };
-        
+
         var order = Order.Create(
             Guid.NewGuid(), Location.Of(10, 10).Value, Weight.Of(6));
-        
-        var dispatchService = new DispatchService();
-        
-        // act
-        dispatchService.Dispatch(order, couriers);
-        
-        // assert
-        var events = validCourier.GetDomainEvents();
-        events.Should().NotBeEmpty();
 
-        var courierAssignedEvent = events.OfType<OrderAcceptedByCourier>().FirstOrDefault();
+        var dispatchService = new DispatchService();
+
+        // act
+        var result = dispatchService.Dispatch(order, couriers);
+
+        // assert
+        result.IsSuccess.Should().BeTrue();
+
+        var actualCourier = result.Value;
+        actualCourier.Should().Be(validCourier);
+
+        var courierAssignedEvent = actualCourier
+                                   .GetDomainEvents()
+                                   .OfType<OrderAcceptedByCourier>().FirstOrDefault();
         courierAssignedEvent.Should().NotBeNull();
         courierAssignedEvent!.OrderId.Should().Be(order.Id);
 
         invalidCourierWhichNotHandles.GetDomainEvents().Should().BeEmpty();
         invalidCourierWhichCanHandle.GetDomainEvents().Should().BeEmpty();
     }
-    
+
     [Fact]
     public void Should_Throw_IfNoCouriersFound()
     {
@@ -65,29 +68,29 @@ public class DispatchServiceTest
         var invalidCourier1 = Courier.Create(
             Guid.NewGuid(), Guid.NewGuid().ToString(), Transport.Bicycle);
         invalidCourier1.GetOnTheLine();
-        
+
         var invalidCourier2 = Courier.Create(
             Guid.NewGuid(), Guid.NewGuid().ToString(), Transport.Pedestrian);
         invalidCourier2.GetOnTheLine();
 
         var couriers = new[]
         {
-            invalidCourier1, 
+            invalidCourier1,
             invalidCourier2
         };
-        
+
         var order = Order.Create(
             Guid.NewGuid(), Location.Of(10, 10).Value, Weight.Of(6));
-        
+
         var dispatchService = new DispatchService();
 
         var expectedException = Exceptions.NoCouriersFound(order.Id);
-        
+
         // act
-        var action = () => dispatchService.Dispatch(order, couriers);
-        
+        var result = dispatchService.Dispatch(order, couriers);
+
         // assert
-        var exception = action.Should().Throw<DomainException>();
-        exception.Which.Message.Should().Be(expectedException.Message);
+        var exception = result.IsFailure.Should().BeTrue();
+        result.Error.Message.Should().Be(expectedException.Message);
     }
 }

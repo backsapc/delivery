@@ -1,22 +1,24 @@
-﻿using DeliveryApp.Core.Domain.CourierAggregate;
+﻿using CSharpFunctionalExtensions;
+using DeliveryApp.Core.Domain.CourierAggregate;
 using DeliveryApp.Core.Domain.OrderAggregate;
+using DeliveryApp.Core.Domain.SharedKernel.Exceptions;
 
 namespace DeliveryApp.Core.DomainServices.Dispatch;
 
 public class DispatchService : IDispatchService
 {
-    public void Dispatch(Order order, IReadOnlyList<Courier> couriers)
+    public Result<Courier, DomainException> Dispatch(Order order, IReadOnlyCollection<Courier> couriers)
     {
         var bestCourier = couriers
                           .Where(x => x.CanHandle(order.Weight))
                           .MinBy(x => x.CalculateTime(order.DeliveryLocation));
 
         if (bestCourier == null)
-        {
-            throw Exceptions.NoCouriersFound(order.Id);
-        }
-        
+            return Exceptions.NoCouriersFound(order.Id);
+
         bestCourier.AcceptOrder(order.Id);
         order.AssignTo(bestCourier.Id);
+
+        return bestCourier;
     }
 }
