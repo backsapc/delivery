@@ -23,9 +23,7 @@ public class Handler : IRequestHandler<Command, bool>
     public async Task<bool> Handle(Command request, CancellationToken cancellationToken)
     {
         // Получаем геопозицию из Geo (пока ставим фэйковое значение)
-        var locationCreateRandomResult = RandomLocation();
-        if (locationCreateRandomResult.IsFailure) return false;
-        var location = locationCreateRandomResult.Value;
+        var location = Location.Random();
 
         // Создаем вес
         var weight = Weight.Of(request.Weight);
@@ -36,10 +34,5 @@ public class Handler : IRequestHandler<Command, bool>
         // Сохраняем
         _orderRepository.Add(order);
         return await _unitOfWork.SaveEntitiesAsync(cancellationToken);
-    }
-
-    private static Result<Location, ValidationException> RandomLocation()
-    {
-        return Location.Of(new Random().Next(1, 11), new Random().Next(1, 11));
     }
 }

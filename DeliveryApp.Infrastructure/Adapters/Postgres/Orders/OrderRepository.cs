@@ -21,4 +21,18 @@ public class OrderRepository(ApplicationDbContext dbContext) : IOrderRepository
     {
         return await dbContext.Orders.FirstOrDefaultAsync(x => x.Id == orderId);
     }
+
+    public async Task<IReadOnlyCollection<Order>> UnassignedOrders()
+    {
+        return await dbContext.Orders
+                              .Where(x => x.Status.Value == OrderStatus.Created.Value)
+                              .ToArrayAsync();
+    }
+    
+    public async Task<IReadOnlyCollection<Order>> AssignedOrders()
+    {
+        return await dbContext.Orders
+                              .Where(x => x.Status.Value == OrderStatus.Assigned.Value)
+                              .ToArrayAsync();
+    }
 }

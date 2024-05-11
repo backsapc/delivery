@@ -96,10 +96,6 @@ namespace DeliveryApp.Api
             services.AddTransient<
                 IRequestHandler<Queries.Couriers.GetActiveCouriers.Query, Queries.Couriers.GetActiveCouriers.Response>, 
                 Queries.Couriers.GetActiveCouriers.Handler>();
-
-            services.AddSingleton<GetAllAssignedOrders>(x => async () => await Infrastructure.Adapters.Postgres.Orders.Queries.GetAllAssignedOrders(x.GetRequiredService<Queries.GetDbConnection>()));
-            services.AddSingleton<GetAllNotAssignedOrders>(x => async () => await Infrastructure.Adapters.Postgres.Orders.Queries.GetAllNotAssignedOrders(x.GetRequiredService<Queries.GetDbConnection>()));
-            services.AddSingleton<GetAllReadyCouriers>(x => async () => await Infrastructure.Adapters.Postgres.Couriers.Queries.GetAllReadyCouriers(x.GetRequiredService<Queries.GetDbConnection>()));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

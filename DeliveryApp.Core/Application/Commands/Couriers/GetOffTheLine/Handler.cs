@@ -22,6 +22,7 @@ public class Handler : IRequestHandler<Command, bool>
         
         courier!.GetOffTheLine();
 
+        _courierRepository.Update(courier);
         return await _unitOfWork.SaveEntitiesAsync(cancellationToken);
     }
 }
