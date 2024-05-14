@@ -28,6 +28,10 @@ namespace DeliveryApp.Infrastructure.EntityConfigurations.CourierAggregate
                 .WithMany()
                 .IsRequired()
                 .HasForeignKey("transport_id");
+                
+            entityTypeBuilder
+                .Property(entity => entity.CurrentOrderId)
+                .HasColumnName("current_order_id");
 
             entityTypeBuilder
                 .OwnsOne(entity => entity.CourierLocation, l =>

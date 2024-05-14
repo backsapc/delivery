@@ -6,12 +6,11 @@ namespace DeliveryApp.Core.Domain.CourierAggregate;
 
 public sealed class Courier : Aggregate<Guid>
 {
-    public string Name { get; set; }
-    public Transport Transport { get; set; }
-    public Location CourierLocation { get; set; }
-    public CourierStatus Status { get; set; }
-
-    private Guid? CurrentOrderId { get; set; }
+    public string Name { get; private set; }
+    public Transport Transport { get; private set; }
+    public Location CourierLocation { get; private set; }
+    public CourierStatus Status { get; private set; }
+    public Guid? CurrentOrderId { get; private set; }
 
     private Courier() { }
     
