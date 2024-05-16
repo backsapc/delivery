@@ -24,4 +24,13 @@ public class CourierRepository(ApplicationDbContext dbContext) : ICourierReposit
                      .Include(x => x.Transport)
                      .FirstOrDefaultAsync(o => o.Id == courierId);
     }
+
+    public async Task<IReadOnlyCollection<Courier>> ReadyCouriers()
+    {
+        return await dbContext
+                            .Couriers
+                            .Include(x => x.Transport)
+                            .Where(o => o.Status.Value == CourierStatus.Ready.Value)
+                            .ToArrayAsync();
+    }
 }

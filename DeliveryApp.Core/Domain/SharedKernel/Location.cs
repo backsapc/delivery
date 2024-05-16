@@ -25,6 +25,9 @@ public sealed class Location : ValueObject
         return new Location(x, y);
     }
 
+    public static Location Random() =>
+        Of(new Random().Next(1, 11), new Random().Next(1, 11)).Value;
+
     public long DistanceTo(Location other)
     {
         return Math.Abs(PositionX - other.PositionX) + Math.Abs(PositionY - other.PositionY);
