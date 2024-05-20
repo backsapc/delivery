@@ -2,6 +2,7 @@
 using DeliveryApp.Core.Domain.OrderAggregate;
 using DeliveryApp.Core.Domain.SharedKernel;
 using DeliveryApp.Core.Domain.SharedKernel.Exceptions;
+using DeliveryApp.Core.Ports;
 using MediatR;
 using Primitives;
 
@@ -11,25 +12,29 @@ public class Handler : IRequestHandler<Command, bool>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IOrderRepository _orderRepository;
+    private readonly IGeoClient _geoClient;
 
     public Handler(
         IUnitOfWork unitOfWork,
-        IOrderRepository orderRepository)
+        IOrderRepository orderRepository,
+        IGeoClient geoClient)
     {
         _unitOfWork = unitOfWork;
         _orderRepository = orderRepository;
+        _geoClient = geoClient;
     }
     
     public async Task<bool> Handle(Command request, CancellationToken cancellationToken)
     {
-        // Получаем геопозицию из Geo (пока ставим фэйковое значение)
-        var location = Location.Random();
-
+        // Получаем геопозицию из Geo
+        var location = await _geoClient.Location(request.Address, cancellationToken);
+        if (location.IsFailure) return false;
+        
         // Создаем вес
         var weight = Weight.Of(request.Weight);
 
         // Создаем заказ
-        var order = Order.Create(request.BasketId, location, weight);
+        var order = Order.Create(request.BasketId, location.Value, weight);
 
         // Сохраняем
         _orderRepository.Add(order);

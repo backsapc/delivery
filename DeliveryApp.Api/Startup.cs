@@ -5,7 +5,9 @@ using Api.OpenApi;
 using DeliveryApp.Core.Domain.CourierAggregate;
 using DeliveryApp.Core.Domain.OrderAggregate;
 using DeliveryApp.Core.DomainServices.Dispatch;
+using DeliveryApp.Core.Ports;
 using DeliveryApp.Infrastructure;
+using DeliveryApp.Infrastructure.Adapters.Grpc.GeoService;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Couriers;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Orders;
 using MediatR;
@@ -92,6 +94,9 @@ namespace DeliveryApp.Api
             var connectionString = Configuration["CONNECTION_STRING"];
             var geoServiceGrpcHost = Configuration["GEO_SERVICE_GRPC_HOST"];
             var messageBrokerHost = Configuration["MESSAGE_BROKER_HOST"];
+            
+            // Geo
+            services.AddTransient<IGeoClient>(x => new Client(geoServiceGrpcHost));
             
             // БД 
             services.AddDbContext<ApplicationDbContext>(options =>

@@ -12,6 +12,11 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.4"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.4"/>
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.2"/>
+
+        <PackageReference Include="Google.Protobuf" Version="3.26.1" />
+        <PackageReference Include="Grpc.AspNetCore" Version="2.62.0" />
+        <PackageReference Include="Grpc.Net.Client" Version="2.62.0" />
+        <PackageReference Include="Grpc.Tools" Version="2.62.0" />
     </ItemGroup>
     
     <ItemGroup>
@@ -22,6 +27,13 @@
     <ItemGroup>
       <Folder Include="Adapters\" />
       <Folder Include="Migrations\" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="Adapters\Grpc\GeoService\grpc.proto" />
+        <Protobuf Include="Adapters\Grpc\GeoService\grpc.proto">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Protobuf>
     </ItemGroup>
 
 </Project>
