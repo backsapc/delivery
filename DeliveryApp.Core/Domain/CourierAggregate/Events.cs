@@ -2,13 +2,13 @@
 
 namespace DeliveryApp.Core.Domain.CourierAggregate;
 
-public class OrderAcceptedByCourier : IDomainEvent
+public record OrderAcceptedByCourier : DomainEvent
 {
     public Guid OrderId { get; set; }
     public Guid CourierId { get; set; }
 }
 
-public class CourierDeliveredOrder : IDomainEvent
+public record CourierDeliveredOrder : DomainEvent
 {
     public Guid OrderId { get; set; }
     public Guid CourierId { get; set; }

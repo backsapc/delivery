@@ -2,12 +2,15 @@ using System.Reflection;
 using Api.Filters;
 using Api.Formatters;
 using Api.OpenApi;
+using DeliveryApp.Api.Adapters.Kafka.BasketConfirmed;
+using DeliveryApp.Core.Application.DomainEventHandlers;
 using DeliveryApp.Core.Domain.CourierAggregate;
 using DeliveryApp.Core.Domain.OrderAggregate;
 using DeliveryApp.Core.DomainServices.Dispatch;
 using DeliveryApp.Core.Ports;
 using DeliveryApp.Infrastructure;
 using DeliveryApp.Infrastructure.Adapters.Grpc.GeoService;
+using DeliveryApp.Infrastructure.Adapters.Kafka.OrderStatusChanged;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Couriers;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Orders;
 using MediatR;
@@ -96,7 +99,11 @@ namespace DeliveryApp.Api
             var messageBrokerHost = Configuration["MESSAGE_BROKER_HOST"];
             
             // Geo
-            services.AddTransient<IGeoClient>(x => new Client(geoServiceGrpcHost));
+            services.AddTransient<IGeoClient>(x => new Client(geoServiceGrpcHost!));
+
+            // Message Broker
+            services.AddHostedService<ConsumerService>(
+                x => new ConsumerService(x, messageBrokerHost!));
             
             // БД 
             services.AddDbContext<ApplicationDbContext>(options =>
@@ -116,6 +123,7 @@ namespace DeliveryApp.Api
             // Ports & Adapters
             services.AddTransient<ICourierRepository, CourierRepository>();
             services.AddTransient<IOrderRepository, OrderRepository>();
+            services.AddTransient<IBusProducer>(x=> new Producer(messageBrokerHost!));
             
             // Domain Services
             services.AddTransient<IDispatchService, DispatchService>();
@@ -143,6 +151,11 @@ namespace DeliveryApp.Api
             services.AddTransient<
                 IRequestHandler<Queries.Couriers.GetAllCouriers.Query, Queries.Couriers.GetAllCouriers.Response>, 
                 Queries.Couriers.GetAllCouriers.Handler>();
+            
+            // Domain Event Handlers
+            services.AddTransient<INotificationHandler<OrderCreated>, OrderCreatedDomainEventHandler>();
+            services.AddTransient<INotificationHandler<OrderAssignedToCourier>, OrderAssignedDomainEventHandler>();
+            services.AddTransient<INotificationHandler<OrderCompleted>, OrderCompletedDomainEventHandler>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

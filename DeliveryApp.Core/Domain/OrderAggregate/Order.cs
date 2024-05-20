@@ -21,11 +21,16 @@ public sealed class Order : Aggregate<Guid>
 
     public static Order Create(Guid orderId, Location location, Weight weight)
     {
-        return new Order(
+        var order = new Order(
             orderId,
             Ensure.NotNull(location),
             Ensure.NotNull(weight),
             OrderStatus.Created);
+        
+        // Место плохое, но лучше места всё равно нет
+        order.RaiseDomainEvent(new OrderCreated { OrderId = orderId }); 
+
+        return order;
     }
 
     public void AssignTo(Guid courierId)
