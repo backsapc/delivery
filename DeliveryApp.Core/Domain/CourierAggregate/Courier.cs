@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using DeliveryApp.Core.Domain.SharedKernel;
+using DeliveryApp.Core.Domain.SharedKernel.Exceptions;
 using Primitives;
 
 namespace DeliveryApp.Core.Domain.CourierAggregate;
@@ -170,5 +171,25 @@ public sealed class Transport : Entity<int>
     {
         var steps = first.DistanceTo(second) / (decimal) Speed;
         return (long) Math.Round(steps, MidpointRounding.ToPositiveInfinity);
+    }
+
+    public static Result<Transport, DomainException> FromName(string name)
+    {
+        var transport = List().SingleOrDefault(x => x.Name == name);
+
+        if (transport is null)
+            return new DomainException($"Transport with name \"{name}\" not found");
+
+        return transport;
+    }
+
+    public static Result<Transport, DomainException> FromId(int id)
+    {
+        var transport = List().SingleOrDefault(x => x.Id == id);
+
+        if (transport is null)
+            return new DomainException($"Transport with id \"{id}\" not found");
+
+        return transport;
     }
 }

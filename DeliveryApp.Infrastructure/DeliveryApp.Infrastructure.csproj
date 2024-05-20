@@ -21,6 +21,7 @@
     
     <ItemGroup>
       <Folder Include="Adapters\" />
+      <Folder Include="Migrations\" />
     </ItemGroup>
 
 </Project>

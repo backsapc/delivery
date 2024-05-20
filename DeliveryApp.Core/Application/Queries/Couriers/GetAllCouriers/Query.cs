@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace DeliveryApp.Core.Application.Queries.Couriers.GetActiveCouriers;
+namespace DeliveryApp.Core.Application.Queries.Couriers.GetAllCouriers;
 
 public class Query : IRequest<Response>;
 
