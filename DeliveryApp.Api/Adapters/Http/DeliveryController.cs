@@ -23,7 +23,22 @@ public class DeliveryController : DefaultApiController
 
     public override async Task<IActionResult> CreateOrder()
     {
-        return Ok();
+        #region Addresses
+
+        var addresses = new[] { "Тестировочная", "Айтишная", "Эйчарная" };
+
+        #endregion
+        
+        var command = new Commands.Orders.CreateOrder.Command
+        {
+            BasketId = Guid.NewGuid(),
+            Address = addresses[new Random().Next(0, addresses.Length)],
+            Weight = new Random().Next(0, 5)
+        };
+        
+        var result = await _mediator.Send(command);
+
+        return result ? Ok() : BadRequest();
     }
 
     public override async Task<IActionResult> GetActiveOrders()

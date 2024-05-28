@@ -8,15 +8,15 @@ public class Command : IRequest<bool>
     /// Идентификатор корзины
     /// </summary>
     /// <remarks>Id корзины берется за основу при создании Id заказа, они совпадают</remarks>
-    public Guid BasketId { get; }
+    public Guid BasketId { get; init; }
 
     /// <summary>
     /// Адрес
     /// </summary>
-    public string Address { get; }
+    public string Address { get; init; }
 
     /// <summary>
     /// Вес
     /// </summary>
-    public int Weight { get; }
+    public int Weight { get; init; }
 }
