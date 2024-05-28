@@ -4,7 +4,7 @@ namespace Primitives
 {
     public abstract class Aggregate<TKey> : Entity<TKey>, AggregateRoot where TKey : IComparable<TKey>
     {
-        private readonly List<IDomainEvent> _domainEvents = new();
+        private readonly List<DomainEvent> _domainEvents = new();
 
         protected Aggregate(TKey id) : base(id)
         {
@@ -14,11 +14,11 @@ namespace Primitives
         {
         }
 
-        public IReadOnlyCollection<IDomainEvent> GetDomainEvents() => _domainEvents.ToList();
+        public IReadOnlyCollection<DomainEvent> GetDomainEvents() => _domainEvents.ToList();
 
         public void ClearDomainEvents() => _domainEvents.Clear();
 
-        protected void RaiseDomainEvent(IDomainEvent domainEvent)
+        protected void RaiseDomainEvent(DomainEvent domainEvent)
         {
             _domainEvents.Add(domainEvent);
         }
@@ -26,5 +26,7 @@ namespace Primitives
 
     public interface AggregateRoot
     {
+        IReadOnlyCollection<DomainEvent> GetDomainEvents();
+        void ClearDomainEvents();
     }
 }

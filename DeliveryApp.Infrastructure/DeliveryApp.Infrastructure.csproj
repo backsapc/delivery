@@ -17,6 +17,8 @@
         <PackageReference Include="Grpc.AspNetCore" Version="2.62.0" />
         <PackageReference Include="Grpc.Net.Client" Version="2.62.0" />
         <PackageReference Include="Grpc.Tools" Version="2.62.0" />
+
+        <PackageReference Include="Confluent.Kafka" Version="2.4.0"/>
     </ItemGroup>
     
     <ItemGroup>
@@ -33,6 +35,15 @@
         <None Remove="Adapters\Grpc\GeoService\grpc.proto" />
         <Protobuf Include="Adapters\Grpc\GeoService\grpc.proto">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Protobuf>
+        <None Remove="Adapters\Grpc\NotificationServer\grpc.proto" />
+        <Protobuf Include="Adapters\Kafka\OrderStatusChanged\grpc.proto">
+          <GrpcServices>Both</GrpcServices>
+          <Access>Public</Access>
+          <ProtoCompile>True</ProtoCompile>
+          <CompileOutputs>True</CompileOutputs>
+          <OutputDir>obj\Debug\net8.0\</OutputDir>
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Protobuf>
     </ItemGroup>
 
