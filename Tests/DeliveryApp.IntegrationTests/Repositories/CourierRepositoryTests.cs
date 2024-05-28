@@ -70,7 +70,7 @@ public class CourierRepositoryShould : IAsyncLifetime
 
         //Act
         var courierRepository = new CourierRepository(_context);
-        var unitOfWork = new UnitOfWork(_context);
+        var unitOfWork = new UnitOfWork(null, _context);
         courierRepository.Add(courier);
         await unitOfWork.SaveEntitiesAsync();
 
@@ -86,7 +86,7 @@ public class CourierRepositoryShould : IAsyncLifetime
         var courier = Courier.Create(Guid.NewGuid(), "Иван", Transport.Pedestrian);
 
         var courierRepository = new CourierRepository(_context);
-        var unitOfWork = new UnitOfWork(_context);
+        var unitOfWork = new UnitOfWork(null, _context);
         courierRepository.Add(courier);
         await unitOfWork.SaveEntitiesAsync();
 
@@ -110,7 +110,7 @@ public class CourierRepositoryShould : IAsyncLifetime
 
         //Act
         var courierRepository = new CourierRepository(_context);
-        var unitOfWork = new UnitOfWork(_context);
+        var unitOfWork = new UnitOfWork(null, _context);
         courierRepository.Add(courier);
         await unitOfWork.SaveEntitiesAsync();
 

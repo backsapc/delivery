@@ -2,14 +2,19 @@
 
 namespace DeliveryApp.Core.Domain.OrderAggregate;
 
-public class OrderAssignedToCourier : IDomainEvent
+public record OrderCreated : DomainEvent
 {
-    public Guid OrderId { get; set; }
-    public Guid CourierId { get; set; }
+    public Guid OrderId { get; init; }
 }
 
-public class OrderCompleted : IDomainEvent
+public record OrderAssignedToCourier : DomainEvent
 {
-    public Guid OrderId { get; set; }
-    public Guid CourierId { get; set; }
+    public Guid OrderId { get; init; }
+    public Guid CourierId { get; init; }
+}
+
+public record OrderCompleted : DomainEvent
+{
+    public Guid OrderId { get; init; }
+    public Guid CourierId { get; init; }
 }

@@ -2,7 +2,7 @@
 using DeliveryApp.Core.Domain.CourierAggregate;
 using MediatR;
 
-namespace DeliveryApp.Core.Application.Queries.Couriers.GetActiveCouriers;
+namespace DeliveryApp.Core.Application.Queries.Couriers.GetAllCouriers;
 
 public class Handler : IRequestHandler<Query, Response>
 {
@@ -18,9 +18,8 @@ public class Handler : IRequestHandler<Query, Response>
         using var connection = _getDbConnection();
         connection.Open();
 
-        const string sql = "select id, name, location_x, location_y from public.couriers where status in @statuses";
-        var result = await connection.QueryAsync(
-            sql, new { status = new [] { CourierStatus.Ready.Value, CourierStatus.Busy.Value } });
+        const string sql = "select id, name, location_x, location_y from public.couriers";
+        var result = await connection.QueryAsync(sql);
 
         var couriers = result.AsList()
                              .Select(x => Map(x))
@@ -33,12 +32,12 @@ public class Handler : IRequestHandler<Query, Response>
     {
         return new Courier
         {
-            Id = value["id"],
-            Name = value["name"],
+            Id = value.id,
+            Name = value.name,
             Location = new Location
             {
-                X = value["location_x"],
-                Y = value["location_y"]
+                X = value.location_x,
+                Y = value.location_y
             }
         };
     }

@@ -1,11 +1,23 @@
+using System.Reflection;
+using Api.Filters;
+using Api.Formatters;
+using Api.OpenApi;
+using DeliveryApp.Api.Adapters.Kafka.BasketConfirmed;
+using DeliveryApp.Core.Application.DomainEventHandlers;
 using DeliveryApp.Core.Domain.CourierAggregate;
 using DeliveryApp.Core.Domain.OrderAggregate;
 using DeliveryApp.Core.DomainServices.Dispatch;
+using DeliveryApp.Core.Ports;
 using DeliveryApp.Infrastructure;
+using DeliveryApp.Infrastructure.Adapters.Grpc.GeoService;
+using DeliveryApp.Infrastructure.Adapters.Kafka.OrderStatusChanged;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Couriers;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Orders;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using Npgsql;
 using Primitives;
 
@@ -45,11 +57,53 @@ namespace DeliveryApp.Api
                     });
             });
             
+            // HTTP Handlers
+            services.AddControllers(options =>
+                    {
+                        options.InputFormatters.Insert(0, new InputFormatterStream());
+                    })
+                    .AddNewtonsoftJson(options =>
+                    {
+                        options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                        options.SerializerSettings.Converters.Add(new StringEnumConverter
+                        {
+                            NamingStrategy = new CamelCaseNamingStrategy()
+                        });
+                    });
+            
+            // Swagger
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("1.0.0", new OpenApiInfo
+                {
+                    Title = "Delivery Service",
+                    Description = "Отвечает за учет курьеров, деспетчеризацию доставкуов, доставку",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Kirill Vetchinkin",
+                        Url = new Uri("https://microarch.ru"),
+                        Email = "info@microarch.ru"
+                    }
+                });
+                options.CustomSchemaIds(type => type.FriendlyId(true));
+                options.IncludeXmlComments($"{AppContext.BaseDirectory}{Path.DirectorySeparatorChar}{Assembly.GetEntryAssembly()!.GetName().Name}.xml");
+                options.DocumentFilter<BasePathFilter>("");
+                options.OperationFilter<GeneratePathParamsValidationFilter>();
+            });
+            services.AddSwaggerGenNewtonsoftSupport();
+            
             // Configuration
             services.Configure<Settings>(options => Configuration.Bind(options));
             var connectionString = Configuration["CONNECTION_STRING"];
             var geoServiceGrpcHost = Configuration["GEO_SERVICE_GRPC_HOST"];
             var messageBrokerHost = Configuration["MESSAGE_BROKER_HOST"];
+            
+            // Geo
+            services.AddTransient<IGeoClient>(x => new Client(geoServiceGrpcHost!));
+
+            // Message Broker
+            services.AddHostedService<ConsumerService>(
+                x => new ConsumerService(x, messageBrokerHost!));
             
             // БД 
             services.AddDbContext<ApplicationDbContext>(options =>
@@ -69,6 +123,7 @@ namespace DeliveryApp.Api
             // Ports & Adapters
             services.AddTransient<ICourierRepository, CourierRepository>();
             services.AddTransient<IOrderRepository, OrderRepository>();
+            services.AddTransient<IBusProducer>(x=> new Producer(messageBrokerHost!));
             
             // Domain Services
             services.AddTransient<IDispatchService, DispatchService>();
@@ -94,8 +149,13 @@ namespace DeliveryApp.Api
                 Queries.Orders.GetActiveOrders.Handler>();
             
             services.AddTransient<
-                IRequestHandler<Queries.Couriers.GetActiveCouriers.Query, Queries.Couriers.GetActiveCouriers.Response>, 
-                Queries.Couriers.GetActiveCouriers.Handler>();
+                IRequestHandler<Queries.Couriers.GetAllCouriers.Query, Queries.Couriers.GetAllCouriers.Response>, 
+                Queries.Couriers.GetAllCouriers.Handler>();
+            
+            // Domain Event Handlers
+            services.AddTransient<INotificationHandler<OrderCreated>, OrderCreatedDomainEventHandler>();
+            services.AddTransient<INotificationHandler<OrderAssignedToCourier>, OrderAssignedDomainEventHandler>();
+            services.AddTransient<INotificationHandler<OrderCompleted>, OrderCompletedDomainEventHandler>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -110,7 +170,26 @@ namespace DeliveryApp.Api
             }
 
             app.UseHealthChecks("/health");
+            
             app.UseRouting();
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+            app.UseSwagger(c =>
+               {
+                   c.RouteTemplate = "openapi/{documentName}/openapi.json";
+               })
+               .UseSwaggerUI(options =>
+               {
+                   options.RoutePrefix = "openapi";
+                   options.SwaggerEndpoint("/openapi/1.0.0/openapi.json", "Swagger Delivery Service");
+                   options.RoutePrefix = string.Empty;
+                   options.SwaggerEndpoint("/openapi-original.json", "Swagger Delivery Service");
+               });
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
         }
     }
 }

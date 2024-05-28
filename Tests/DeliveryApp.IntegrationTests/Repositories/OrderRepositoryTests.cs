@@ -77,7 +77,7 @@ public class OrderRepositoryShould : IAsyncLifetime
 
         //Act
         var orderRepository = new OrderRepository(_context);
-        var unitOfWork = new UnitOfWork(_context);
+        var unitOfWork = new UnitOfWork(null, _context);
             
         orderRepository.Add(order);
         await unitOfWork.SaveEntitiesAsync();
@@ -99,7 +99,7 @@ public class OrderRepositoryShould : IAsyncLifetime
         var orderRepository = new OrderRepository(_context);
         orderRepository.Add(order);
             
-        var unitOfWork = new UnitOfWork(_context);
+        var unitOfWork = new UnitOfWork(null, _context);
         await unitOfWork.SaveEntitiesAsync();
 
         //Act
@@ -123,7 +123,7 @@ public class OrderRepositoryShould : IAsyncLifetime
         var orderRepository = new OrderRepository(_context);
         orderRepository.Add(order);
             
-        var unitOfWork = new UnitOfWork(_context);
+        var unitOfWork = new UnitOfWork(null, _context);
         await unitOfWork.SaveEntitiesAsync();
 
         //Assert
